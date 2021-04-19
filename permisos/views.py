@@ -3,8 +3,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from permisos.models import Permisos
 from rest_framework.response import Response
-from permisos.serializers import PermisosSerializer
+from permisos.serializers import PermisosSerializer, DetailPermisosSerializer
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import viewsets
 
 class ViewPermisos(APIView):
     
@@ -75,4 +76,12 @@ class DetailView(APIView):
         serialized.save()
         return Response(status=200)
             
+
+class PermisosViewSet(viewsets.ModelViewSet):
+    queryset = Permisos.objects.all()
+    serializer_class = PermisosSerializer()
     
+    def get_serializer_class(self, *args, **kwargs):
+        if self.action == 'retrieve':
+            return DetailPermisosSerializer
+        return PermisosSerializer
